@@ -451,18 +451,40 @@ export default function VideoMeetComponent() {
 
             {askForUsername === true ?
 
-                <div>
+                <div className="lobby-page">
+                    {/* Orbs */}
+                    <div className="orb orb-purple" style={{ width: 500, height: 500, top: '-150px', left: '-100px' }} />
+                    <div className="orb orb-blue"   style={{ width: 400, height: 400, bottom: '-100px', right: '-80px' }} />
 
+                    <div className="lobby-card glass">
+                        <div style={{ display:'flex', alignItems:'center', gap:10, fontFamily:"'Syne',sans-serif", fontSize:'1.4rem', fontWeight:800, letterSpacing:'-0.02em' }}>
+                            <div className="logo-icon">⚡</div>
+                            Nexus
+                        </div>
 
-                    <h2>Enter into Lobby </h2>
-                    <TextField id="outlined-basic" label="Username" value={username} onChange={e => setUsername(e.target.value)} variant="outlined" />
-                    <Button variant="contained" onClick={connect}>Connect</Button>
+                        <div className="lobby-preview">
+                            <video ref={localVideoref} autoPlay muted style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:0 }} />
+                        </div>
 
+                        <div style={{ textAlign:'center' }}>
+                            <h2 style={{ fontFamily:"'Syne',sans-serif", fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:6 }}>Ready to join?</h2>
+                            <p style={{ fontSize:'0.9rem', color:'var(--muted)' }}>Enter your display name to continue</p>
+                        </div>
 
-                    <div>
-                        <video ref={localVideoref} autoPlay muted></video>
+                        <input
+                            className="nexus-input"
+                            style={{ width:'100%', padding:'14px 18px', fontSize:'15px' }}
+                            placeholder="Your display name"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && connect()}
+                            autoFocus
+                        />
+
+                        <button className="btn-glow" style={{ width:'100%', justifyContent:'center', padding:'14px' }} onClick={connect}>
+                            Join meeting →
+                        </button>
                     </div>
-
                 </div> :
 
 
@@ -500,26 +522,29 @@ export default function VideoMeetComponent() {
 
 
                     <div className={styles.buttonContainers}>
-                        <IconButton onClick={handleVideo} style={{ color: "white" }}>
-                            {(video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
-                        </IconButton>
-                        <IconButton onClick={handleEndCall} style={{ color: "red" }}>
-                            <CallEndIcon  />
-                        </IconButton>
-                        <IconButton onClick={handleAudio} style={{ color: "white" }}>
-                            {audio === true ? <MicIcon /> : <MicOffIcon />}
+                        <IconButton onClick={handleVideo} style={{ color: video ? "#fff" : "#9ca3af", background: video ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", width: 52, height: 52 }}>
+                            {video ? <VideocamIcon /> : <VideocamOffIcon />}
                         </IconButton>
 
-                        {screenAvailable === true ?
-                            <IconButton onClick={handleScreen} style={{ color: "white" }}>
-                                {screen === true ? <ScreenShareIcon /> : <StopScreenShareIcon />}
-                            </IconButton> : <></>}
+                        <IconButton onClick={handleEndCall} style={{ color: "#fff", background: "linear-gradient(135deg,#ef4444,#dc2626)", border: "none", borderRadius: "16px", width: 56, height: 56, boxShadow: "0 0 24px rgba(239,68,68,0.45)" }}>
+                            <CallEndIcon />
+                        </IconButton>
 
-                        <Badge badgeContent={newMessages} max={999} color='orange'>
-                            <IconButton onClick={() => setModal(!showModal)} style={{ color: "white" }}>
-                                <ChatIcon />                        </IconButton>
+                        <IconButton onClick={handleAudio} style={{ color: audio ? "#fff" : "#9ca3af", background: audio ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", width: 52, height: 52 }}>
+                            {audio ? <MicIcon /> : <MicOffIcon />}
+                        </IconButton>
+
+                        {screenAvailable &&
+                            <IconButton onClick={handleScreen} style={{ color: screen ? "#a855f7" : "#fff", background: screen ? "rgba(168,85,247,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${screen ? "rgba(168,85,247,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: "16px", width: 52, height: 52 }}>
+                                {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+                            </IconButton>
+                        }
+
+                        <Badge badgeContent={newMessages} max={999} color="secondary">
+                            <IconButton onClick={() => setModal(!showModal)} style={{ color: showModal ? "#60a5fa" : "#fff", background: showModal ? "rgba(37,99,235,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${showModal ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: "16px", width: 52, height: 52 }}>
+                                <ChatIcon />
+                            </IconButton>
                         </Badge>
-
                     </div>
 
 
