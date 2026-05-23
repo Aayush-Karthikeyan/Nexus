@@ -418,23 +418,24 @@ export default function VideoMeetComponent() {
     }
 
     const addMessage = (data, sender, socketIdSender) => {
+        // Skip messages from yourself — we already added them locally in sendMessage
+        if (socketIdSender === socketIdRef.current) return;
         setMessages((prevMessages) => [
             ...prevMessages,
             { sender: sender, data: data }
         ]);
-        if (socketIdSender !== socketIdRef.current) {
-            setNewMessages((prevNewMessages) => prevNewMessages + 1);
-        }
+        setNewMessages((prevNewMessages) => prevNewMessages + 1);
     };
 
 
 
     let sendMessage = () => {
-        console.log(socketRef.current);
-        socketRef.current.emit('chat-message', message, username)
+        if (!message.trim()) return;
+        const displayName = username.trim() || "Anonymous";
+        socketRef.current.emit('chat-message', message, displayName);
+        // Also add to own messages immediately so sender sees it instantly
+        setMessages(prev => [...prev, { sender: displayName, data: message }]);
         setMessage("");
-
-        // this.setState({ message: "", sender: username })
     }
 
     
@@ -496,12 +497,25 @@ export default function VideoMeetComponent() {
                             <div className={styles.chattingDisplay}>
 
                                 {messages.length !== 0 ? messages.map((item, index) => {
-
-                                    console.log(messages)
+                                    const isMe = item.sender === (username.trim() || "Anonymous");
                                     return (
-                                        <div style={{ marginBottom: "20px" }} key={index}>
-                                            <p style={{ fontWeight: "bold" }}>{item.sender}</p>
-                                            <p>{item.data}</p>
+                                        <div key={index} style={{ display:'flex', flexDirection:'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
+                                            <span style={{ fontSize:11, fontWeight:700, color: isMe ? 'var(--green2)' : 'var(--amber2)', marginBottom:4, letterSpacing:'0.03em' }}>
+                                                {isMe ? 'You' : item.sender}
+                                            </span>
+                                            <div style={{
+                                                maxWidth:'85%',
+                                                padding:'9px 13px',
+                                                borderRadius: isMe ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                                                background: isMe ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)',
+                                                border: `1px solid ${isMe ? 'rgba(16,185,129,0.25)' : 'rgba(255,255,255,0.08)'}`,
+                                                fontSize:14,
+                                                lineHeight:1.45,
+                                                color:'var(--text)',
+                                                wordBreak:'break-word'
+                                            }}>
+                                                {item.data}
+                                            </div>
                                         </div>
                                     )
                                 }) : <p>No Messages Yet</p>}
