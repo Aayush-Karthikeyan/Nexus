@@ -97,7 +97,7 @@
     top: 0;
     right: 0;
     width: 320px;
-    height: 100vh;
+    height: calc(100vh - 80px); /* 80px = control bar height */
     background: rgba(8,14,10,0.97);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
