@@ -7,10 +7,21 @@ export default function LandingPage() {
 
     return (
         <div className="landing">
-            {/* Animated orbs */}
-            <div className="orb orb-purple" style={{ width: 600, height: 600, top: '-200px', left: '-150px' }} />
-            <div className="orb orb-blue"   style={{ width: 500, height: 500, bottom: '-100px', right: '-100px' }} />
-            <div className="orb orb-pink"   style={{ width: 350, height: 350, top: '40%', left: '45%' }} />
+            {/* Acid green glow orb */}
+            <div className="orb orb-green"  style={{ width:700, height:700, bottom:'-200px', right:'-150px', opacity:0.12 }} />
+            <div className="orb orb-purple" style={{ width:400, height:400, top:'-100px', left:'-100px', opacity:0.08 }} />
+
+            {/* Tunnel text background */}
+            <div className="tunnel-wrap">
+                <div className="tunnel-text">
+                    <div className="tunnel-row">CONNECT</div>
+                    <div className="tunnel-row">VIDEO · CALL</div>
+                    <div className="tunnel-row">NEXUS</div>
+                    <div className="tunnel-row">CONNECT</div>
+                    <div className="tunnel-row">VIDEO · CALL</div>
+                    <div className="tunnel-row">NEXUS</div>
+                </div>
+            </div>
 
             {/* Navbar */}
             <nav className="landing-nav">
@@ -20,8 +31,8 @@ export default function LandingPage() {
                 </Link>
                 <div className="landing-nav-links">
                     <button className="nav-link" onClick={() => router("/aljk23")}>Join as Guest</button>
-                    <Link to="/auth" className="btn-ghost" style={{ padding: '10px 22px', fontSize: '14px' }}>Log in</Link>
-                    <Link to="/auth" className="btn-glow" style={{ padding: '10px 22px', fontSize: '14px' }}>Get started →</Link>
+                    <Link to="/auth" className="btn-ghost" style={{ padding:'9px 20px', fontSize:'13px' }}>Log in</Link>
+                    <Link to="/auth" className="btn-glow" style={{ padding:'9px 20px', fontSize:'15px' }}>Get started →</Link>
                 </div>
             </nav>
 
@@ -34,12 +45,12 @@ export default function LandingPage() {
                     </div>
 
                     <h1 className="hero-h1 fade-up-2">
-                        <span className="grad-text">Video calls,</span><br />
-                        reimagined.
+                        Video calls,<br />
+                        <span className="accent" style={{ color:'#39ff14' }}>reimagined.</span>
                     </h1>
 
                     <p className="hero-sub fade-up-3">
-                        Crystal-clear video meetings with real-time collaboration.
+                        Crystal-clear peer-to-peer video meetings with real-time collaboration.
                         No downloads. No friction. Just connect.
                     </p>
 
@@ -59,10 +70,10 @@ export default function LandingPage() {
                         </div>
                         <div className="mock-body">
                             {[
-                                { emoji: '🧑‍💻', label: 'Aayush', },
-                                { emoji: '👩‍🎨', label: 'Sara', },
-                                { emoji: '🧑‍🚀', label: 'Dev', },
-                                { emoji: '👨‍🔬', label: 'Raj', },
+                                { emoji: '🧑‍💻', label: 'Aayush' },
+                                { emoji: '👩‍🎨', label: 'Sara' },
+                                { emoji: '🧑‍🚀', label: 'Dev' },
+                                { emoji: '👨‍🔬', label: 'Raj' },
                             ].map((p, i) => (
                                 <div className="mock-tile" key={i}>
                                     <div className="mock-avatar">{p.emoji}</div>

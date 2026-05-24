@@ -80,28 +80,30 @@ function HomeComponent() {
                 <div className="home-cards fade-up-2">
                     {/* New Meeting */}
                     <div className="action-card">
+                        <div className="card-border-line" />
                         <div className="card-icon-wrap green">🎥</div>
                         <div>
                             <h3>New Meeting</h3>
                             <p>Start an instant meeting and share the link with anyone.</p>
                         </div>
-                        <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-                            <button className="btn-glow" style={{ padding:'10px 22px', fontSize:'14px' }} onClick={handleNewMeeting}>
+                        <div style={{ display:'flex', gap:0, flexWrap:'wrap' }}>
+                            <button className="btn-glow" style={{ padding:'11px 24px', fontSize:'15px' }} onClick={handleNewMeeting}>
                                 Start now →
                             </button>
-                            <button className="btn-ghost" style={{ padding:'10px 18px', fontSize:'14px' }} onClick={handleCopyLink}>
+                            <button className="btn-ghost" style={{ padding:'11px 18px', fontSize:'13px', marginLeft:8 }} onClick={handleCopyLink}>
                                 {copied ? '✅ Copied!' : '🔗 Copy link'}
                             </button>
                         </div>
                         {copied && (
-                            <p style={{ fontSize:12, color:'var(--green2)', marginTop:-8 }}>
-                                Link ready — paste it to invite others!
+                            <p style={{ fontSize:11, color:'#39ff14', marginTop:-8, fontFamily:"'Space Grotesk',sans-serif", letterSpacing:'0.04em' }}>
+                                Link copied — paste it to invite others
                             </p>
                         )}
                     </div>
 
                     {/* Join Meeting */}
                     <div className="action-card join-card">
+                        <div className="card-border-line" />
                         <div className="card-icon-wrap amber">🔗</div>
                         <div>
                             <h3>Join a Meeting</h3>
@@ -110,7 +112,7 @@ function HomeComponent() {
                         <div className="join-input-row">
                             <input
                                 className="nexus-input"
-                                placeholder="Paste link or enter code"
+                                placeholder="Paste link or code"
                                 value={meetingCode}
                                 onChange={e => setMeetingCode(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleJoinVideoCall()}
