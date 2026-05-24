@@ -2,7 +2,7 @@
 
 > Peer-to-peer video conferencing built with WebRTC, Socket.io, React, and Node.js.
 
-**[Live Demo](https://nexus-app-aayush.vercel.app)** · **[GitHub](https://github.com/Aayush-Karthikeyan/Zoom-Clone)**
+**[Live Demo](https://nexus-app-aayush.vercel.app)** · **[GitHub](https://github.com/Aayush-Karthikeyan/Nexus)**
 
 ---
 
@@ -79,8 +79,8 @@ The signaling server (Socket.io) only handles the initial handshake — once the
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/Aayush-Karthikeyan/Zoom-Clone.git
-cd Zoom-Clone
+git clone https://github.com/Aayush-Karthikeyan/Nexus.git
+cd Nexus
 ```
 
 ### 2. Backend setup
@@ -114,7 +114,7 @@ App runs at `http://localhost:3000`. Backend runs at `http://localhost:8000`.
 ## Project Structure
 
 ```
-Zoom-Clone/
+Nexus/
 ├── backend/
 │   └── src/
 │       ├── app.js                  # Express server + Socket.io setup
