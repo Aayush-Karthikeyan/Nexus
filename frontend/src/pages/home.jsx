@@ -43,15 +43,15 @@ function HomeComponent() {
         try { await addToUserHistory(code); } catch (_) { /* guest — no token, that's fine */ }
     };
 
+    const [meetingRoom, setMeetingRoom] = useState(() => Math.random().toString(36).substring(2, 10));
+
     const handleNewMeeting = async () => {
-        const code = Math.random().toString(36).substring(2, 10);
-        await safeAddHistory(code);
-        navigate(`/${code}`);
+        await safeAddHistory(meetingRoom);
+        navigate(`/${meetingRoom}`);
     };
 
     const handleCopyLink = async () => {
-        const code = Math.random().toString(36).substring(2, 10);
-        const link = `${window.location.origin}/${code}`;
+        const link = `${window.location.origin}/${meetingRoom}`;
         try { await navigator.clipboard.writeText(link); } catch (_) {}
         setCopied(true);
         setTimeout(() => setCopied(false), 2500);
