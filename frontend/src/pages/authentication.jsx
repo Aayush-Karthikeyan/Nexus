@@ -41,11 +41,10 @@ export default function Authentication() {
 
                 <div className="auth-left-content fade-up">
                     <Link to="/" className="auth-logo">
-                        <div className="logo-icon">⚡</div>
-                        Nexus
+                        <span className="wordmark">NEXUS<span className="wm-dot" />APP</span>
                     </Link>
                     <h2 className="auth-tagline">
-                        <span className="grad-text">Connect.</span><br />
+                        Connect.<br />
                         Collaborate.<br />
                         Create.
                     </h2>
@@ -109,8 +108,8 @@ export default function Authentication() {
                         />
                     </div>
 
-                    {error   && <div className="auth-error">⚠️ {error}</div>}
-                    {success && <div className="auth-error" style={{ color: '#4ade80', borderColor: 'rgba(74,222,128,0.2)', background: 'rgba(74,222,128,0.06)' }}>✅ {success}</div>}
+                    {error   && <div className="auth-error">ERR — {error}</div>}
+                    {success && <div className="auth-error">OK — {success}</div>}
 
                     <button className="auth-submit" onClick={handleAuth}>
                         {formState === 0 ? 'Sign in →' : 'Create account →'}

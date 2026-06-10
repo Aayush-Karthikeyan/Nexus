@@ -75,15 +75,13 @@ function HomeComponent() {
 
             {/* Navbar */}
             <nav className="home-nav">
-                <Link to="/" className="landing-logo" style={{ textDecoration:'none', color:'inherit' }}>
-                    <div className="logo-icon">⚡</div>
-                    Nexus
+                <Link to="/" className="wordmark">
+                    NEXUS<span className="wm-dot" />APP
                 </Link>
                 <div className="home-nav-right">
-                    <Link to="/history" className="icon-btn" title="History">🕐</Link>
+                    <Link to="/history" className="nav-text-link">History</Link>
                     <button
-                        className="btn-ghost"
-                        style={{ padding:'9px 20px', fontSize:'14px' }}
+                        className="nav-text-link"
                         onClick={() => { localStorage.removeItem("token"); navigate("/auth"); }}
                     >
                         Sign out
@@ -94,7 +92,7 @@ function HomeComponent() {
             {/* Body */}
             <div className="home-body">
                 <div className="home-greeting fade-up">
-                    <h1>{greeting} 👋</h1>
+                    <h1>{greeting}.</h1>
                     <p>What would you like to do today?</p>
                 </div>
 
@@ -102,7 +100,7 @@ function HomeComponent() {
                     {/* New Meeting */}
                     <div className="action-card">
                         <div className="card-border-line" />
-                        <div className="card-icon-wrap green">🎥</div>
+                        <div className="card-icon-wrap green">01 — CALL</div>
                         <div>
                             <h3>New Meeting</h3>
                             <p>Start an instant meeting and share the link with anyone.</p>
@@ -111,12 +109,12 @@ function HomeComponent() {
                             <button className="btn-glow" style={{ padding:'11px 24px', fontSize:'15px' }} onClick={handleNewMeeting}>
                                 Start now →
                             </button>
-                            <button className="btn-ghost" style={{ padding:'11px 18px', fontSize:'13px', marginLeft:8 }} onClick={handleCopyLink}>
-                                {copied ? '✅ Copied!' : '🔗 Copy link'}
+                            <button className="btn-ghost" style={{ padding:'11px 18px', marginLeft:8 }} onClick={handleCopyLink}>
+                                {copied ? 'Copied ✓' : 'Copy link'}
                             </button>
                         </div>
                         {copied && (
-                            <p style={{ fontSize:11, color:'#39ff14', marginTop:-8, fontFamily:"'Space Grotesk',sans-serif", letterSpacing:'0.04em' }}>
+                            <p style={{ fontSize:9, color:'var(--muted)', marginTop:-8, fontFamily:'var(--font-mono)', letterSpacing:'0.18em', textTransform:'uppercase' }}>
                                 Link copied — paste it to invite others
                             </p>
                         )}
@@ -125,7 +123,7 @@ function HomeComponent() {
                     {/* Join Meeting */}
                     <div className="action-card join-card">
                         <div className="card-border-line" />
-                        <div className="card-icon-wrap amber">🔗</div>
+                        <div className="card-icon-wrap amber">02 — JOIN</div>
                         <div>
                             <h3>Join a Meeting</h3>
                             <p>Paste a Nexus link or enter a meeting code to jump in.</p>

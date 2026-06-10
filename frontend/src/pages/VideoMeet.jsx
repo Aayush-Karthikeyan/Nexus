@@ -433,18 +433,15 @@ export default function VideoMeetComponent() {
                     <div className="orb orb-blue"   style={{ width: 400, height: 400, bottom: '-100px', right: '-80px' }} />
 
                     <div className="lobby-card glass">
-                        <div style={{ display:'flex', alignItems:'center', gap:10, fontFamily:"'Clash Display',sans-serif", fontSize:'1.4rem', fontWeight:800, letterSpacing:'-0.02em' }}>
-                            <div className="logo-icon">⚡</div>
-                            Nexus
-                        </div>
+                        <span className="wordmark">NEXUS<span className="wm-dot" />APP</span>
 
                         <div className="lobby-preview">
                             <video ref={localVideoref} autoPlay muted style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:0 }} />
                         </div>
 
                         <div style={{ textAlign:'center' }}>
-                            <h2 style={{ fontFamily:"'Clash Display',sans-serif", fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:6 }}>Ready to join?</h2>
-                            <p style={{ fontSize:'0.9rem', color:'var(--muted)' }}>Enter your display name to continue</p>
+                            <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.8rem', fontWeight:800, letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Ready to join?</h2>
+                            <p style={{ fontSize:10, color:'var(--muted)', fontFamily:'var(--font-mono)', letterSpacing:'0.2em', textTransform:'uppercase' }}>Enter your display name to continue</p>
                         </div>
 
                         <input
@@ -477,17 +474,18 @@ export default function VideoMeetComponent() {
                                     const isMe = item.fromMe === true;
                                     return (
                                         <div key={index} style={{ display:'flex', flexDirection:'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
-                                            <span style={{ fontSize:11, fontWeight:700, color: isMe ? 'var(--green2)' : 'var(--amber2)', marginBottom:4, letterSpacing:'0.03em' }}>
+                                            <span style={{ fontSize:8, fontWeight:700, fontFamily:'var(--font-mono)', color: isMe ? '#ffffff' : 'rgba(255,255,255,0.5)', marginBottom:5, letterSpacing:'0.22em', textTransform:'uppercase' }}>
                                                 {isMe ? 'You' : item.sender}
                                             </span>
                                             <div style={{
                                                 maxWidth:'85%',
                                                 padding:'9px 13px',
-                                                borderRadius: isMe ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                                                background: isMe ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)',
-                                                border: `1px solid ${isMe ? 'rgba(16,185,129,0.25)' : 'rgba(255,255,255,0.08)'}`,
-                                                fontSize:14,
+                                                borderRadius: 0,
+                                                background: isMe ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+                                                border: `1px solid ${isMe ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                                                fontSize:13,
                                                 lineHeight:1.45,
+                                                fontFamily:'var(--font-body)',
                                                 color:'var(--text)',
                                                 wordBreak:'break-word'
                                             }}>
@@ -520,26 +518,26 @@ export default function VideoMeetComponent() {
 
 
                     <div className={styles.buttonContainers}>
-                        <IconButton onClick={handleVideo} style={{ color: video ? "#fff" : "#9ca3af", background: video ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", width: 52, height: 52 }}>
+                        <IconButton onClick={handleVideo} style={{ color: video ? "#fff" : "#9ca3af", background: video ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 0, width: 52, height: 52 }}>
                             {video ? <VideocamIcon /> : <VideocamOffIcon />}
                         </IconButton>
 
-                        <IconButton onClick={handleEndCall} style={{ color: "#fff", background: "linear-gradient(135deg,#ef4444,#dc2626)", border: "none", borderRadius: "16px", width: 56, height: 56, boxShadow: "0 0 24px rgba(239,68,68,0.45)" }}>
+                        <IconButton onClick={handleEndCall} style={{ color: "#fff", background: "linear-gradient(135deg,#ef4444,#dc2626)", border: "none", borderRadius: 0, width: 56, height: 56, boxShadow: "0 0 24px rgba(239,68,68,0.35)" }}>
                             <CallEndIcon />
                         </IconButton>
 
-                        <IconButton onClick={handleAudio} style={{ color: audio ? "#fff" : "#9ca3af", background: audio ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", width: 52, height: 52 }}>
+                        <IconButton onClick={handleAudio} style={{ color: audio ? "#fff" : "#9ca3af", background: audio ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 0, width: 52, height: 52 }}>
                             {audio ? <MicIcon /> : <MicOffIcon />}
                         </IconButton>
 
                         {screenAvailable &&
-                            <IconButton onClick={handleScreen} style={{ color: screen ? "#34d399" : "#fff", background: screen ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${screen ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: "16px", width: 52, height: 52 }}>
+                            <IconButton onClick={handleScreen} style={{ color: screen ? "#121212" : "#fff", background: screen ? "#ffffff" : "rgba(255,255,255,0.06)", border: `1px solid ${screen ? "#ffffff" : "rgba(255,255,255,0.08)"}`, borderRadius: 0, width: 52, height: 52 }}>
                                 {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
                             </IconButton>
                         }
 
-                        <Badge badgeContent={newMessages} max={999} color="success">
-                            <IconButton onClick={() => { setModal(!showModal); setNewMessages(0); }} style={{ color: showModal ? "#34d399" : "#fff", background: showModal ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${showModal ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: "16px", width: 52, height: 52 }}>
+                        <Badge badgeContent={newMessages} max={999} sx={{ '& .MuiBadge-badge': { background: '#ffffff', color: '#121212', fontFamily: 'var(--font-mono)', fontWeight: 700, borderRadius: 0 } }}>
+                            <IconButton onClick={() => { setModal(!showModal); setNewMessages(0); }} style={{ color: showModal ? "#121212" : "#fff", background: showModal ? "#ffffff" : "rgba(255,255,255,0.06)", border: `1px solid ${showModal ? "#ffffff" : "rgba(255,255,255,0.08)"}`, borderRadius: 0, width: 52, height: 52 }}>
                                 <ChatIcon />
                             </IconButton>
                         </Badge>
@@ -564,13 +562,12 @@ export default function VideoMeetComponent() {
                         <div style={{
                             position:'absolute', inset:0,
                             display:'flex', flexDirection:'column',
-                            alignItems:'center', justifyContent:'center', gap:4,
-                            background:'#0d1410',
+                            alignItems:'center', justifyContent:'center', gap:6,
+                            background:'#0e0e0e',
                             opacity: video ? 0 : 1,
                             transition:'opacity 0.2s'
                         }}>
-                            <span style={{ fontSize:26 }}>🎥</span>
-                            <span style={{ fontSize:10, color:'rgba(255,255,255,0.35)', fontFamily:"'DM Sans',sans-serif" }}>Cam off</span>
+                            <span style={{ fontSize:9, letterSpacing:'0.3em', color:'rgba(255,255,255,0.35)', fontFamily:'var(--font-mono)', textTransform:'uppercase' }}>CAM OFF</span>
                         </div>
                         {/* Mic muted badge */}
                         {!audio && (
@@ -587,13 +584,15 @@ export default function VideoMeetComponent() {
                         {/* Your name on pip */}
                         <div style={{
                             position:'absolute', bottom:6, left:8,
-                            fontSize:10, fontWeight:600,
-                            color:'rgba(240,250,245,0.85)',
-                            fontFamily:"'DM Sans',sans-serif",
-                            background:'rgba(0,0,0,0.45)',
+                            fontSize:8, fontWeight:700,
+                            letterSpacing:'0.18em',
+                            textTransform:'uppercase',
+                            color:'rgba(255,255,255,0.85)',
+                            fontFamily:'var(--font-mono)',
+                            background:'rgba(0,0,0,0.5)',
                             backdropFilter:'blur(4px)',
-                            borderRadius:5,
-                            padding:'2px 7px',
+                            borderRadius:0,
+                            padding:'3px 8px',
                             zIndex:2,
                             maxWidth:'80%',
                             overflow:'hidden',
@@ -616,21 +615,22 @@ export default function VideoMeetComponent() {
                                     }}
                                     autoPlay
                                     playsInline
-                                    style={{ width:'100%', aspectRatio:'16/9', borderRadius:18, objectFit:'cover', background:'#0d1410', display:'block' }}
+                                    style={{ width:'100%', aspectRatio:'16/9', borderRadius:0, objectFit:'cover', background:'#0e0e0e', display:'block' }}
                                 />
                                 {/* Name badge */}
                                 <div style={{
                                     position:'absolute', bottom:12, left:12,
-                                    background:'rgba(0,0,0,0.55)',
+                                    background:'rgba(0,0,0,0.6)',
                                     backdropFilter:'blur(8px)',
-                                    border:'1px solid rgba(255,255,255,0.1)',
-                                    borderRadius:8,
-                                    padding:'4px 10px',
-                                    fontSize:12,
-                                    fontWeight:600,
-                                    color:'#f0faf5',
-                                    fontFamily:"'DM Sans',sans-serif",
-                                    letterSpacing:'0.01em',
+                                    border:'1px solid rgba(255,255,255,0.12)',
+                                    borderRadius:0,
+                                    padding:'5px 11px',
+                                    fontSize:9,
+                                    fontWeight:700,
+                                    letterSpacing:'0.2em',
+                                    textTransform:'uppercase',
+                                    color:'#ffffff',
+                                    fontFamily:'var(--font-mono)',
                                     maxWidth:'70%',
                                     overflow:'hidden',
                                     textOverflow:'ellipsis',

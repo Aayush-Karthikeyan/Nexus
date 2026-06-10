@@ -2,7 +2,7 @@
 .meetVideoContainer {
     position: relative;
     height: 100vh;
-    background: #000;
+    background: #121212;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -18,7 +18,7 @@
     align-items: center;
     justify-items: center;
     overflow-y: auto;
-    background: #080808;
+    background: #0e0e0e;
 }
 
 .conferenceView video {
@@ -43,8 +43,8 @@
     aspect-ratio: 16/9;
     border-radius: 0;
     object-fit: cover;
-    border: 2px solid rgba(57,255,20,0.6);
-    box-shadow: 0 0 20px rgba(57,255,20,0.2), 0 8px 32px rgba(0,0,0,0.8);
+    border: 1px solid rgba(255,255,255,0.55);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.8);
     z-index: 10;
     background: #0a0a0a;
     transition: transform 0.2s;
@@ -62,10 +62,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: rgba(0,0,0,0.96);
+    background: rgba(18,18,18,0.96);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid rgba(255,255,255,0.06);
     padding: 0 24px;
     z-index: 20;
 }
@@ -79,14 +79,14 @@
     width: 50px !important;
     height: 50px !important;
     border-radius: 0 !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
     background: rgba(255,255,255,0.04) !important;
     color: #fff !important;
     transition: background 0.15s, transform 0.15s, border-color 0.15s !important;
 }
 .buttonContainers button:hover {
-    background: rgba(57,255,20,0.1) !important;
-    border-color: rgba(57,255,20,0.4) !important;
+    background: rgba(255,255,255,0.12) !important;
+    border-color: rgba(255,255,255,0.5) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -97,10 +97,10 @@
     right: 0;
     width: 300px;
     height: calc(100vh - 80px);
-    background: rgba(0,0,0,0.97);
+    background: rgba(14,14,14,0.97);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border-left: 2px solid rgba(57,255,20,0.25);
+    border-left: 1px solid rgba(255,255,255,0.18);
     display: flex;
     flex-direction: column;
     z-index: 15;
@@ -120,13 +120,13 @@
 }
 
 .chatContainer h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 400;
-    letter-spacing: 0.14em;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     padding: 18px 20px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     color: #fff;
 }
 
@@ -141,28 +141,20 @@
 }
 
 .chattingDisplay::-webkit-scrollbar { width: 3px; }
-.chattingDisplay::-webkit-scrollbar-thumb { background: rgba(57,255,20,0.2); }
+.chattingDisplay::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
 
-.chattingDisplay p:first-child {
-    font-size: 10px;
-    font-weight: 700;
-    color: #39ff14;
-    margin-bottom: 2px;
-    letter-spacing: 0.1em;
+/* No messages state */
+.chattingDisplay > p {
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    text-align: center;
+    margin-top: 40px;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    font-family: var(--font-mono);
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    font-family: 'Space Grotesk', sans-serif;
-}
-
-.chattingDisplay p:last-child {
-    font-size: 13px;
-    color: rgba(255,255,255,0.75);
-    line-height: 1.45;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 0;
-    padding: 8px 12px;
-    width: fit-content;
-    max-width: 90%;
 }
 
 .chattingArea {
@@ -170,9 +162,9 @@
     gap: 0;
     align-items: stretch;
     padding: 12px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid rgba(255,255,255,0.06);
     flex-shrink: 0;
-    background: rgba(0,0,0,0.97);
+    background: rgba(14,14,14,0.97);
 }
 
 .chattingArea > div { flex: 1; }
@@ -181,33 +173,24 @@
     background: rgba(255,255,255,0.03) !important;
     border-radius: 0 !important;
     color: #fff !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 13px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 11px !important;
 }
 
 .chattingArea button {
     border-radius: 0 !important;
-    background: #39ff14 !important;
-    color: #000 !important;
-    font-family: 'Bebas Neue', sans-serif !important;
-    font-weight: 400 !important;
-    letter-spacing: 0.1em !important;
-    font-size: 15px !important;
+    background: #ffffff !important;
+    color: #121212 !important;
+    font-family: var(--font-display) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.14em !important;
+    font-size: 13px !important;
     text-transform: uppercase !important;
     padding: 10px 16px !important;
     box-shadow: none !important;
+    border: 1px solid #ffffff !important;
 }
-
-/* No messages state */
-.chattingDisplay > p {
-    font-size: 11px;
-    color: rgba(255,255,255,0.18);
-    text-align: center;
-    margin-top: 40px;
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+.chattingArea button:hover {
+    background: transparent !important;
+    color: #ffffff !important;
 }
