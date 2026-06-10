@@ -39,7 +39,8 @@ export default function VideoMeetComponent() {
 
     let [screen, setScreen] = useState(false);
 
-    let [showModal, setModal] = useState(true);
+    // chat starts closed on phones — it covers the video there
+    let [showModal, setModal] = useState(() => window.innerWidth > 768);
 
     let [screenAvailable, setScreenAvailable] = useState(false);
 
@@ -436,7 +437,7 @@ export default function VideoMeetComponent() {
                         <span className="wordmark">NEXUS<span className="wm-dot" />APP</span>
 
                         <div className="lobby-preview">
-                            <video ref={localVideoref} autoPlay muted style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:0 }} />
+                            <video ref={localVideoref} autoPlay muted playsInline style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:0 }} />
                         </div>
 
                         <div style={{ textAlign:'center' }}>
@@ -550,6 +551,7 @@ export default function VideoMeetComponent() {
                             ref={localVideoref}
                             autoPlay
                             muted
+                            playsInline
                             style={{
                                 position:'absolute', inset:0,
                                 width:'100%', height:'100%',

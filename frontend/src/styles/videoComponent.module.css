@@ -2,6 +2,7 @@
 .meetVideoContainer {
     position: relative;
     height: 100vh;
+    height: 100dvh; /* mobile browsers — excludes the address bar */
     background: #121212;
     overflow: hidden;
     display: flex;
@@ -12,7 +13,7 @@
 .conferenceView {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
     gap: 2px;
     padding: 70px 2px 82px;
     align-items: center;
@@ -97,6 +98,7 @@
     right: 0;
     width: 300px;
     height: calc(100vh - 80px);
+    height: calc(100dvh - 80px);
     background: rgba(14,14,14,0.97);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -193,4 +195,27 @@
 .chattingArea button:hover {
     background: transparent !important;
     color: #ffffff !important;
+}
+
+/* ── Mobile ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .chatRoom {
+        width: 100%;
+        border-left: none;
+    }
+
+    .meetUserVideo {
+        width: 124px;
+        bottom: 92px;
+        left: 10px;
+    }
+
+    .conferenceView {
+        padding: 12px 2px 86px;
+    }
+
+    .buttonContainers {
+        gap: 6px;
+        padding: 0 10px;
+    }
 }
