@@ -165,11 +165,13 @@ export default function LandingPage() {
                     connection.
                 </h1>
                 <div className="hero-cta-row">
-                    <button className="hero-cta-link" onClick={() => router("/auth")}>
-                        Start a call
-                    </button>
-                    <button className="hero-cta-circle" onClick={() => router("/auth")} aria-label="Start a call">
-                        →
+                    <button className="hero-cta" onClick={() => router("/auth")}>
+                        <span>Start a call</span>
+                        <span className="hero-cta-circle">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M4 12h15M13 5l7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square" />
+                            </svg>
+                        </span>
                     </button>
                 </div>
             </div>
