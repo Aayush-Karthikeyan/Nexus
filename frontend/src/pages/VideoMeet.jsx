@@ -16,9 +16,15 @@ const server_url = server;
 
 var connections = {};
 
+// STUN finds the direct path; TURN relays media when peers are on
+// different networks (phone on 5G vs laptop on WiFi) and direct fails
 const peerConfigConnections = {
     "iceServers": [
-        { "urls": "stun:stun.l.google.com:19302" }
+        { "urls": "stun:stun.l.google.com:19302" },
+        { "urls": "stun:openrelay.metered.ca:80" },
+        { "urls": "turn:openrelay.metered.ca:80", "username": "openrelayproject", "credential": "openrelayproject" },
+        { "urls": "turn:openrelay.metered.ca:443", "username": "openrelayproject", "credential": "openrelayproject" },
+        { "urls": "turn:openrelay.metered.ca:443?transport=tcp", "username": "openrelayproject", "credential": "openrelayproject" }
     ]
 }
 
@@ -607,7 +613,7 @@ export default function VideoMeetComponent() {
 
                     <div className={styles.conferenceView}>
                         {videos.map((video) => (
-                            <div key={video.socketId} style={{ position:'relative', width:'100%', maxWidth:560 }}>
+                            <div key={video.socketId} style={{ position:'relative', width:'100%', height:'100%', minHeight:0, overflow:'hidden' }}>
                                 <video
                                     data-socket={video.socketId}
                                     ref={ref => {
@@ -617,7 +623,7 @@ export default function VideoMeetComponent() {
                                     }}
                                     autoPlay
                                     playsInline
-                                    style={{ width:'100%', aspectRatio:'16/9', borderRadius:0, objectFit:'cover', background:'#0e0e0e', display:'block' }}
+                                    style={{ width:'100%', height:'100%', borderRadius:0, objectFit:'contain', background:'#0e0e0e', display:'block' }}
                                 />
                                 {/* Name badge */}
                                 <div style={{

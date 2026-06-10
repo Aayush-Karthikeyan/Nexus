@@ -9,31 +9,31 @@
     flex-direction: column;
 }
 
-/* Main video grid area */
+/* Main video area — remote feeds fill the whole stage.
+   1 participant = fullscreen; more = even grid cells. */
 .conferenceView {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+    grid-auto-rows: 1fr;
     gap: 2px;
-    padding: 70px 2px 82px;
-    align-items: center;
-    justify-items: center;
-    overflow-y: auto;
+    padding: 0 0 80px;
+    align-items: stretch;
+    justify-items: stretch;
+    overflow: hidden;
     background: #0e0e0e;
+    min-height: 0;
 }
 
 .conferenceView video {
     width: 100%;
-    max-width: 560px;
-    aspect-ratio: 16/9;
+    height: 100%;
     border-radius: 0;
-    object-fit: cover;
+    object-fit: contain; /* never crops — cameras AND screen shares both fit */
     border: none;
     background: #0a0a0a;
     display: block;
-    transition: transform 0.2s;
 }
-.conferenceView video:hover { transform: scale(1.005); }
 
 /* Local self-view pip */
 .meetUserVideo {
@@ -211,7 +211,7 @@
     }
 
     .conferenceView {
-        padding: 12px 2px 86px;
+        padding: 0 0 80px;
     }
 
     .buttonContainers {
