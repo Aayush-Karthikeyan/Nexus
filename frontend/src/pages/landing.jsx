@@ -26,6 +26,7 @@ export default function LandingPage() {
     useEffect(() => {
         const start = performance.now();
         const duration = 1900;
+        const timers = [];
         const tick = (now) => {
             const p = Math.min((now - start) / duration, 1);
             const eased = 1 - Math.pow(1 - p, 3);
@@ -33,12 +34,15 @@ export default function LandingPage() {
             if (p < 1) {
                 rafRef.current = requestAnimationFrame(tick);
             } else {
-                setTimeout(() => setLoaded(true), 250);
-                setTimeout(() => setGone(true), 1350);
+                timers.push(setTimeout(() => setLoaded(true), 250));
+                timers.push(setTimeout(() => setGone(true), 1350));
             }
         };
         rafRef.current = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(rafRef.current);
+        return () => {
+            cancelAnimationFrame(rafRef.current);
+            timers.forEach(clearTimeout);
+        };
     }, []);
 
     // live clock

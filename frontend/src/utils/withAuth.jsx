@@ -1,22 +1,22 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import { Navigate } from "react-router-dom"
 
-const withAuth = (WrappedComponent ) => {
+// Reads the token during render rather than in an effect, so an
+// unauthenticated visitor never sees a frame of the protected page
+const readToken = () => {
+    try {
+        return localStorage.getItem("token");
+    } catch (e) {
+        // Safari private mode throws on localStorage access
+        return null;
+    }
+}
+
+const withAuth = (WrappedComponent) => {
     const AuthComponent = (props) => {
-        const router = useNavigate();
-
-        const isAuthenticated = () => {
-            if(localStorage.getItem("token")) {
-                return true;
-            } 
-            return false;
+        if (!readToken()) {
+            // replace: keeps Back from bouncing between /auth and the guard
+            return <Navigate to="/auth" replace />
         }
-
-        useEffect(() => {
-            if(!isAuthenticated()) {
-                router("/auth")
-            }
-        }, [])  // eslint-disable-line react-hooks/exhaustive-deps
 
         return <WrappedComponent {...props} />
     }

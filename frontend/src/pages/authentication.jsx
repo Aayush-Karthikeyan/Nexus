@@ -49,7 +49,7 @@ export default function Authentication() {
                         Create.
                     </h2>
                     <p className="auth-tagline-sub">
-                        Join thousands of teams using Nexus for crystal-clear video meetings, every day.
+                        Start browser-based video meetings in seconds—no downloads required.
                     </p>
                 </div>
             </div>
@@ -61,7 +61,7 @@ export default function Authentication() {
                     <p className="auth-sub">
                         {formState === 0
                             ? 'Sign in to your Nexus account.'
-                            : 'Start for free. No credit card required.'}
+                            : 'Create an account to save your meeting history.'}
                     </p>
 
                     {/* Tabs */}

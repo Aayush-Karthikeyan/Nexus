@@ -43,7 +43,8 @@ function HomeComponent() {
         try { await addToUserHistory(code); } catch (_) { /* guest — no token, that's fine */ }
     };
 
-    const [meetingRoom, setMeetingRoom] = useState(() => Math.random().toString(36).substring(2, 10));
+    // Generated once per visit — "Start now" and "Copy link" must share it
+    const [meetingRoom] = useState(() => Math.random().toString(36).substring(2, 10));
 
     const handleNewMeeting = async () => {
         await safeAddHistory(meetingRoom);

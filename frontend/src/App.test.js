@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+// Smoke test: the app mounts at "/" and the landing page renders the wordmark.
+// Catches provider/router wiring breakages and import-time crashes.
+test('renders the Nexus landing page', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getAllByText(/NEXUS/i).length).toBeGreaterThan(0);
 });

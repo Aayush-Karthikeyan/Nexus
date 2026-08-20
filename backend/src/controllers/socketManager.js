@@ -3,8 +3,9 @@ import { Server } from "socket.io"
 
 let connections = {}
 let messages = {}
-let timeOnline = {}
 let usernames = {}   // socketId → display name
+
+const MAX_MESSAGE_LENGTH = 2000;
 
 export const connectToSocket = (server) => {
     const io = new Server(server, {
@@ -19,19 +20,20 @@ export const connectToSocket = (server) => {
 
     io.on("connection", (socket) => {
 
-        console.log("SOMETHING CONNECTED")
-
         socket.on("join-call", (path, username) => {
 
             if (connections[path] === undefined) {
                 connections[path] = []
             }
-            connections[path].push(socket.id)
+
+            // A reconnect or double-fire would otherwise list the same
+            // socket twice, so every peer would be signalled twice
+            if (!connections[path].includes(socket.id)) {
+                connections[path].push(socket.id)
+            }
 
             // Store username keyed by socket id
             usernames[socket.id] = username || "Anonymous";
-
-            timeOnline[socket.id] = new Date();
 
             // Send each existing client the new joiner's id + full client list + name map
             const nameMap = {};
@@ -56,6 +58,16 @@ export const connectToSocket = (server) => {
 
         socket.on("chat-message", (data, sender) => {
 
+            // Drop anything that isn't a usable message before it reaches
+            // the room history or the other participants
+            if (typeof data !== "string") return;
+            const text = data.trim();
+            if (text === "" || text.length > MAX_MESSAGE_LENGTH) return;
+
+            const displayName = (typeof sender === "string" && sender.trim() !== "")
+                ? sender.trim().slice(0, 60)
+                : "Anonymous";
+
             const [matchingRoom, found] = Object.entries(connections)
                 .reduce(([room, isFound], [roomKey, roomValue]) => {
 
@@ -73,11 +85,10 @@ export const connectToSocket = (server) => {
                     messages[matchingRoom] = []
                 }
 
-                messages[matchingRoom].push({ 'sender': sender, "data": data, "socket-id-sender": socket.id })
-                console.log("message", matchingRoom, ":", sender, data)
+                messages[matchingRoom].push({ 'sender': displayName, "data": text, "socket-id-sender": socket.id })
 
                 connections[matchingRoom].forEach((elem) => {
-                    io.to(elem).emit("chat-message", data, sender, socket.id)
+                    io.to(elem).emit("chat-message", text, displayName, socket.id)
                 })
             }
 
@@ -85,7 +96,6 @@ export const connectToSocket = (server) => {
 
         socket.on("disconnect", () => {
 
-            var diffTime = Math.abs(timeOnline[socket.id] - new Date())
             delete usernames[socket.id];
 
             var key
@@ -107,6 +117,9 @@ export const connectToSocket = (server) => {
 
                         if (connections[key].length === 0) {
                             delete connections[key]
+                            // Chat history lived only for this room — drop it
+                            // too, otherwise it grows for the process lifetime
+                            delete messages[key]
                         }
                     }
                 }
@@ -122,4 +135,3 @@ export const connectToSocket = (server) => {
 
     return io;
 }
-

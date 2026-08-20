@@ -525,26 +525,26 @@ export default function VideoMeetComponent() {
 
 
                     <div className={styles.buttonContainers}>
-                        <IconButton onClick={handleVideo} style={{ color: video ? "#fff" : "#9ca3af", background: video ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 0, width: 52, height: 52 }}>
+                        <IconButton onClick={handleVideo} aria-label={video ? "Turn camera off" : "Turn camera on"} style={{ color: video ? "#fff" : "#9ca3af", background: video ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 0, width: 52, height: 52 }}>
                             {video ? <VideocamIcon /> : <VideocamOffIcon />}
                         </IconButton>
 
-                        <IconButton onClick={handleEndCall} style={{ color: "#fff", background: "linear-gradient(135deg,#ef4444,#dc2626)", border: "none", borderRadius: 0, width: 56, height: 56, boxShadow: "0 0 24px rgba(239,68,68,0.35)" }}>
+                        <IconButton onClick={handleEndCall} aria-label="End call" style={{ color: "#fff", background: "linear-gradient(135deg,#ef4444,#dc2626)", border: "none", borderRadius: 0, width: 56, height: 56, boxShadow: "0 0 24px rgba(239,68,68,0.35)" }}>
                             <CallEndIcon />
                         </IconButton>
 
-                        <IconButton onClick={handleAudio} style={{ color: audio ? "#fff" : "#9ca3af", background: audio ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 0, width: 52, height: 52 }}>
+                        <IconButton onClick={handleAudio} aria-label={audio ? "Mute microphone" : "Unmute microphone"} style={{ color: audio ? "#fff" : "#9ca3af", background: audio ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 0, width: 52, height: 52 }}>
                             {audio ? <MicIcon /> : <MicOffIcon />}
                         </IconButton>
 
                         {screenAvailable &&
-                            <IconButton onClick={handleScreen} style={{ color: screen ? "#121212" : "#fff", background: screen ? "#ffffff" : "rgba(255,255,255,0.06)", border: `1px solid ${screen ? "#ffffff" : "rgba(255,255,255,0.08)"}`, borderRadius: 0, width: 52, height: 52 }}>
-                                {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+                            <IconButton onClick={handleScreen} aria-label={screen ? "Stop sharing screen" : "Share screen"} style={{ color: screen ? "#121212" : "#fff", background: screen ? "#ffffff" : "rgba(255,255,255,0.06)", border: `1px solid ${screen ? "#ffffff" : "rgba(255,255,255,0.08)"}`, borderRadius: 0, width: 52, height: 52 }}>
+                                {screen ? <StopScreenShareIcon /> : <ScreenShareIcon />}
                             </IconButton>
                         }
 
                         <Badge badgeContent={newMessages} max={999} sx={{ '& .MuiBadge-badge': { background: '#ffffff', color: '#121212', fontFamily: 'var(--font-mono)', fontWeight: 700, borderRadius: 0 } }}>
-                            <IconButton onClick={() => { setModal(!showModal); setNewMessages(0); }} style={{ color: showModal ? "#121212" : "#fff", background: showModal ? "#ffffff" : "rgba(255,255,255,0.06)", border: `1px solid ${showModal ? "#ffffff" : "rgba(255,255,255,0.08)"}`, borderRadius: 0, width: 52, height: 52 }}>
+                            <IconButton onClick={() => { setModal(!showModal); setNewMessages(0); }} aria-label={showModal ? "Hide chat" : "Show chat"} style={{ color: showModal ? "#121212" : "#fff", background: showModal ? "#ffffff" : "rgba(255,255,255,0.06)", border: `1px solid ${showModal ? "#ffffff" : "rgba(255,255,255,0.08)"}`, borderRadius: 0, width: 52, height: 52 }}>
                                 <ChatIcon />
                             </IconButton>
                         </Badge>
