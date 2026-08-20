@@ -12,6 +12,7 @@ import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
 import ChatIcon from '@mui/icons-material/Chat'
 import server from '../environment';
 import { fetchIceServers, FALLBACK_CONFIG } from '../utils/iceServers';
+import { isStreamUsable, getLiveTrack } from '../utils/mediaChecks';
 import { createCandidateCounter, logState, logCandidateCounts } from '../utils/webrtcDebug';
 
 const server_url = server;
@@ -29,10 +30,6 @@ export default function VideoMeetComponent() {
     let socketIdRef = useRef();
 
     let localVideoref = useRef();
-
-    let [videoAvailable, setVideoAvailable] = useState(true);
-
-    let [audioAvailable, setAudioAvailable] = useState(true);
 
     let [video, setVideo] = useState(true);
 
@@ -76,6 +73,11 @@ export default function VideoMeetComponent() {
     let [connectionWarning, setConnectionWarning] = useState("");
     const relayAvailableRef = useRef(true);
 
+    // Mic problems get their own message so ICE state changes (which clear
+    // connectionWarning on 'connected') can't hide "others can't hear you"
+    let [micWarning, setMicWarning] = useState("");
+    const hasRealMicRef = useRef(false);
+
     useEffect(() => {
         // Purge the name left behind by older builds that cached it. Nothing
         // reads this key any more; this clears it from browsers that still have one.
@@ -110,8 +112,6 @@ export default function VideoMeetComponent() {
             micAvailable = true;
         } catch (e) { }
 
-        setVideoAvailable(camAvailable);
-        setAudioAvailable(micAvailable);
         setScreenAvailable(!!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia));
 
         if (camAvailable || micAvailable) {
@@ -135,25 +135,57 @@ export default function VideoMeetComponent() {
         }
     }, [askForUsername])
 
+    // Combined request first; if it fails, fall back to one request per kind
+    // so a denied/busy camera doesn't cost the mic, and vice versa. The lobby
+    // probe's verdict is treated as a hint, not a veto — a transient probe
+    // failure must not permanently disable audio for the whole call.
+    const acquireLocalMedia = async () => {
+        try {
+            return await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        } catch (e) { }
+
+        const tracks = [];
+        try {
+            const mic = await navigator.mediaDevices.getUserMedia({ audio: true });
+            tracks.push(...mic.getAudioTracks());
+        } catch (e) { }
+        try {
+            const cam = await navigator.mediaDevices.getUserMedia({ video: true });
+            tracks.push(...cam.getVideoTracks());
+        } catch (e) { }
+
+        return tracks.length ? new MediaStream(tracks) : null;
+    };
+
     // Acquire (or reuse) the local stream FIRST, then join the room.
     // Joining before media is ready is what caused offers to be sent with
     // tracks that immediately got stopped, breaking the peer connection.
     const getMedia = async () => {
         let stream = window.localStream;
-        const usable = stream && stream.active && stream.getTracks().some(track => track.readyState === 'live');
 
-        if (!usable && (videoAvailable || audioAvailable)) {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: videoAvailable, audio: audioAvailable });
-            } catch (e) {
-                console.log(e);
-                stream = null;
+        // Reuse only when BOTH kinds are still live. A mobile OS can end the
+        // mic track (screen lock, interruption) while video survives — reusing
+        // that half-dead stream is what caused one-way audio in production.
+        if (!isStreamUsable(stream, { needAudio: true, needVideo: true })) {
+            const fresh = await acquireLocalMedia();
+            if (fresh) {
+                try { stream && stream.getTracks().forEach(track => track.stop()) } catch (e) { }
+                stream = fresh;
             }
         }
 
-        if (!stream || !stream.active) {
-            stream = new MediaStream([black(), silence()]);
-        }
+        const liveAudio = getLiveTrack(stream, 'audio');
+        const liveVideo = getLiveTrack(stream, 'video');
+
+        // Per-kind placeholders keep both m-lines in the SDP even when a device
+        // is missing, so both directions negotiate sendrecv regardless of join
+        // order — and a recovered mic can later be swapped in with replaceTrack,
+        // no renegotiation, the same mechanism screen sharing uses.
+        stream = new MediaStream([liveVideo || black(), liveAudio || silence()]);
+
+        hasRealMicRef.current = !!liveAudio;
+        setMicWarning(liveAudio ? "" : "Microphone unavailable — other participants can't hear you.");
+        logState('local', 'tracks', `audio:${liveAudio ? 'live' : 'placeholder'} video:${liveVideo ? 'live' : 'placeholder'}`);
 
         window.localStream = stream;
         cameraStreamRef.current = stream;
@@ -399,20 +431,48 @@ export default function VideoMeetComponent() {
             window.localStream.getVideoTracks().forEach(track => track.enabled = next);
         } catch (e) { console.log(e) }
     }
-    let handleAudio = () => {
+    let handleAudio = async () => {
         const next = !audio;
         setAudio(next);
+
+        // Unmuting without a real mic: try to acquire one now. The silence
+        // placeholder already holds the audio m-line open, so the new track
+        // swaps in via replaceTrack with no renegotiation.
+        if (next && !hasRealMicRef.current) {
+            try {
+                const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const micTrack = micStream.getAudioTracks()[0];
+                if (micTrack) {
+                    try {
+                        window.localStream.getAudioTracks().forEach(t => {
+                            t.stop();
+                            window.localStream.removeTrack(t);
+                        });
+                        window.localStream.addTrack(micTrack);
+                    } catch (e) { console.log(e) }
+                    replaceOutgoingTrack('audio', micTrack);
+                    hasRealMicRef.current = true;
+                    setMicWarning("");
+                    logState('local', 'mic-recovery', 'succeeded');
+                }
+            } catch (e) {
+                logState('local', 'mic-recovery', 'failed');
+            }
+        }
+
         try {
             window.localStream.getAudioTracks().forEach(track => track.enabled = next);
         } catch (e) { console.log(e) }
     }
 
-    const replaceOutgoingVideoTrack = (track) => {
+    const replaceOutgoingTrack = (kind, track) => {
         for (let id in connections) {
-            const sender = connections[id].getSenders().find(s => s.track && s.track.kind === 'video');
+            const sender = connections[id].getSenders().find(s => s.track && s.track.kind === kind);
             if (sender) sender.replaceTrack(track).catch(e => console.log(e));
         }
     }
+
+    const replaceOutgoingVideoTrack = (track) => replaceOutgoingTrack('video', track);
 
     const stopScreenShare = () => {
         try { screenStreamRef.current && screenStreamRef.current.getTracks().forEach(track => track.stop()) } catch (e) { }
@@ -541,8 +601,8 @@ export default function VideoMeetComponent() {
 
                 <div className={styles.meetVideoContainer}>
 
-                    {/* Connection trouble notice — replaces a silent blank call */}
-                    {connectionWarning && (
+                    {/* Connection/mic trouble notice — replaces a silent blank call */}
+                    {(connectionWarning || micWarning) && (
                         <div
                             role="status"
                             style={{
@@ -556,7 +616,7 @@ export default function VideoMeetComponent() {
                                 textAlign: 'center', backdropFilter: 'blur(6px)'
                             }}
                         >
-                            {connectionWarning}
+                            {connectionWarning || micWarning}
                         </div>
                     )}
 
