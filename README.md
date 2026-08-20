@@ -6,6 +6,16 @@
 
 ---
 
+## Demo
+
+[![Watch the demo](https://img.youtube.com/vi/zn1L-Hs3vCQ/maxresdefault.jpg)](https://youtu.be/zn1L-Hs3vCQ)
+
+Watch the 90-second demo on YouTube.
+
+**Try it live:** [https://nexus-app-aayush.vercel.app](https://nexus-app-aayush.vercel.app)
+
+---
+
 ## Overview
 
 Nexus is a full-stack video-conferencing application that lets users start instant meetings, share invitation links, and communicate through live chat—all in the browser with no downloads required.
