@@ -53,8 +53,10 @@ export default function VideoMeetComponent() {
 
     let [askForUsername, setAskForUsername] = useState(true);
 
-    let [username, setUsername] = useState(localStorage.getItem("meetUsername") || "");
-    const myUsernameRef = useRef(localStorage.getItem("meetUsername") || "");
+    // Always blank on entry. The display name is per-meeting and is never
+    // persisted, so a shared browser can't show one person's name to the next.
+    let [username, setUsername] = useState("");
+    const myUsernameRef = useRef("");
 
     const videoRef = useRef([])
 
@@ -75,6 +77,10 @@ export default function VideoMeetComponent() {
     const relayAvailableRef = useRef(true);
 
     useEffect(() => {
+        // Purge the name left behind by older builds that cached it. Nothing
+        // reads this key any more; this clears it from browsers that still have one.
+        try { localStorage.removeItem("meetUsername"); } catch (e) { }
+
         getPermissions();
 
         return () => {
@@ -487,7 +493,6 @@ export default function VideoMeetComponent() {
         const name = username.trim() || "Anonymous";
         setUsername(name);
         myUsernameRef.current = name;
-        localStorage.setItem("meetUsername", name);
         setAskForUsername(false);
         getMedia();
     }
@@ -519,6 +524,8 @@ export default function VideoMeetComponent() {
                             className="nexus-input"
                             style={{ width:'100%', padding:'14px 18px', fontSize:'15px' }}
                             placeholder="Your display name"
+                            name="nexus-display-name"
+                            autoComplete="off"
                             value={username}
                             onChange={e => setUsername(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && connect()}
