@@ -12,6 +12,20 @@ Nexus is a full-stack video-conferencing application that lets users start insta
 
 I built Nexus to understand real-time browser communication at the protocol level, including WebRTC peer connections, SDP offer/answer exchange, ICE candidate negotiation, and Socket.IO-based signaling.
 
+## Screenshots
+
+**Landing page**
+
+![Nexus landing page with the hero headline and Start a Call action](Screenshots/landing.png)
+
+**Dashboard — start or join a meeting**
+
+![Nexus dashboard showing the New Meeting and Join a Meeting cards](Screenshots/dashboard.png)
+
+**In a call — controls and live chat**
+
+![Nexus in-call view showing the participant tile, call controls, and the live chat panel](Screenshots/in-call.png)
+
 ## Features
 
 - **WebRTC video calls** — direct peer-to-peer media when possible, with TURN relay fallback
