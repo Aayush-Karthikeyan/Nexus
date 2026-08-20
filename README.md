@@ -30,6 +30,7 @@ I built Nexus to understand real-time browser communication at the protocol leve
 |---|---|
 | Frontend | React 18, React Router 6, Material UI |
 | Real-time communication | WebRTC (`RTCPeerConnection`), Socket.IO 4 |
+| NAT traversal | Google STUN, managed Metered TURN with backend-issued short-lived credentials |
 | Backend | Node.js, Express 4 |
 | Database | MongoDB Atlas, Mongoose |
 | Authentication | bcrypt password hashing, opaque server-issued tokens |
@@ -94,12 +95,32 @@ cd backend
 npm install
 ```
 
-Create `backend/.env`:
+Create `backend/.env` (see `backend/.env.example`):
 
 ```env
 MONGO_URI=your_mongodb_connection_string
 PORT=8000
+
+# Managed Metered TURN — required for reliable cross-network calls
+METERED_DOMAIN=yourappname.metered.live
+METERED_SECRET_KEY=your_metered_secret_key
 ```
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `MONGO_URI` | Yes | MongoDB connection string for users and meeting history |
+| `PORT` | No | Server port; defaults to `8000` |
+| `METERED_DOMAIN` | For cross-network calls | Your Metered app host, e.g. `yourappname.metered.live` |
+| `METERED_SECRET_KEY` | For cross-network calls | Metered secret key, used **server-side only** |
+
+The two `METERED_*` values stay on the server. The backend exchanges them for
+short-lived TURN credentials and serves those to the browser via
+`GET /api/turn-credentials`; the secret key is never sent to the client or
+included in the frontend bundle.
+
+Without them the app still runs, but falls back to STUN-only. Calls between
+peers on the same network keep working, while calls across different networks
+(for example Wi-Fi to cellular) will usually fail to connect.
 
 Start the development server:
 
@@ -126,8 +147,12 @@ For a deployed frontend, set `REACT_APP_BACKEND_URL` to the deployed backend URL
 ## Deployment
 
 - **Frontend** — deployed on Vercel with `REACT_APP_BACKEND_URL` pointing to the Render backend
-- **Backend** — deployed on Render with `MONGO_URI` configured in the environment
+- **Backend** — deployed on Render with `MONGO_URI`, `METERED_DOMAIN`, and `METERED_SECRET_KEY` configured in the environment. `PORT` is supplied by Render.
 - **Database** — hosted on MongoDB Atlas
+
+The `METERED_*` values must be set as backend environment variables only. Never
+place them in a `REACT_APP_*` variable — Create React App inlines those into the
+public JavaScript bundle.
 
 ## Project Structure
 
@@ -160,7 +185,8 @@ Nexus/
 
 ## Known Limitations
 
-- **TURN reliability** — Nexus currently uses shared public STUN/TURN infrastructure for NAT traversal. A production deployment should use a dedicated managed or self-hosted TURN server.
+- **TURN free-tier quota** — relay traffic runs on Metered's free tier, which caps monthly TURN bandwidth. Only calls that cannot connect directly consume it, but a busy deployment would need a paid plan or a self-hosted TURN server.
+- **STUN-only fallback** — if TURN credentials cannot be retrieved, the app falls back to Google STUN and reports the degraded state in the call UI. Same-network calls still connect; cross-network calls usually will not.
 - **Mesh topology** — every participant connects to every other participant, so the current architecture is best suited to small meetings. Larger rooms would require an SFU such as mediasoup or LiveKit.
 - **In-memory room state** — active connections and chat messages are held in server memory and are lost when the backend restarts.
 - **Free-tier cold starts** — the Render backend may take approximately 30–60 seconds to wake after a period of inactivity.
