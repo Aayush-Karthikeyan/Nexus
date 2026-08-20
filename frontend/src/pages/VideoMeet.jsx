@@ -11,22 +11,17 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
 import ChatIcon from '@mui/icons-material/Chat'
 import server from '../environment';
+import { fetchIceServers, FALLBACK_CONFIG } from '../utils/iceServers';
+import { createCandidateCounter, logState, logCandidateCounts } from '../utils/webrtcDebug';
 
 const server_url = server;
 
 var connections = {};
 
-// STUN finds the direct path; TURN relays media when peers are on
-// different networks (phone on 5G vs laptop on WiFi) and direct fails
-const peerConfigConnections = {
-    "iceServers": [
-        { "urls": "stun:stun.l.google.com:19302" },
-        { "urls": "stun:openrelay.metered.ca:80" },
-        { "urls": "turn:openrelay.metered.ca:80", "username": "openrelayproject", "credential": "openrelayproject" },
-        { "urls": "turn:openrelay.metered.ca:443", "username": "openrelayproject", "credential": "openrelayproject" },
-        { "urls": "turn:openrelay.metered.ca:443?transport=tcp", "username": "openrelayproject", "credential": "openrelayproject" }
-    ]
-}
+// ICE servers come from our backend, which holds the TURN provider secret.
+// STUN alone finds a direct path; a TURN relay is required when peers sit on
+// different networks (phone on cellular vs laptop on Wi-Fi) behind symmetric NAT.
+let peerConfigConnections = { iceServers: FALLBACK_CONFIG.iceServers };
 
 export default function VideoMeetComponent() {
 
@@ -71,6 +66,13 @@ export default function VideoMeetComponent() {
 
     // ICE candidates that arrive before the remote description is set
     const pendingIceRef = useRef({});
+
+    // Per-peer candidate-type tallies, used only for debug output
+    const candidateStatsRef = useRef({});
+
+    // Surfaces a relay/ICE problem instead of leaving a silent blank call
+    let [connectionWarning, setConnectionWarning] = useState("");
+    const relayAvailableRef = useRef(true);
 
     useEffect(() => {
         getPermissions();
@@ -153,6 +155,23 @@ export default function VideoMeetComponent() {
             localVideoref.current.srcObject = stream;
         }
 
+        // ICE config must be resolved BEFORE any peer connection is created,
+        // otherwise the first peers would be built without a relay.
+        const iceConfig = await fetchIceServers({
+            onRetry: () => setConnectionWarning("Waking the secure relay server…")
+        });
+        peerConfigConnections = { iceServers: iceConfig.iceServers };
+        relayAvailableRef.current = iceConfig.relayAvailable;
+        setConnectionWarning("");
+
+        logState('local', 'ice-config', `${iceConfig.source} relay:${iceConfig.relayAvailable}`);
+
+        if (!iceConfig.relayAvailable) {
+            setConnectionWarning(
+                "No relay server available — calls between different networks may not connect."
+            );
+        }
+
         connectToSocketServer();
     }
 
@@ -160,10 +179,54 @@ export default function VideoMeetComponent() {
         const pc = new RTCPeerConnection(peerConfigConnections);
         connections[socketListId] = pc;
 
+        // Short opaque tag so debug output never carries a socket id
+        const peerLabel = `peer-${Object.keys(connections).indexOf(socketListId) + 1}`;
+        const counter = createCandidateCounter();
+        candidateStatsRef.current[socketListId] = counter;
+
         pc.onicecandidate = function (event) {
             if (event.candidate != null) {
+                // Records the type keyword only — never the candidate string,
+                // which contains IP addresses and ports.
+                counter.record(event.candidate);
                 socketRef.current.emit('signal', socketListId, JSON.stringify({ 'ice': event.candidate }))
+            } else {
+                // null candidate = gathering complete
+                logCandidateCounts(peerLabel, counter.snapshot());
             }
+        }
+
+        pc.onicegatheringstatechange = () => {
+            logState(peerLabel, 'iceGatheringState', pc.iceGatheringState);
+        }
+
+        pc.oniceconnectionstatechange = () => {
+            const state = pc.iceConnectionState;
+            logState(peerLabel, 'iceConnectionState', state);
+
+            if (state === 'failed') {
+                logCandidateCounts(peerLabel, counter.snapshot());
+                setConnectionWarning(
+                    relayAvailableRef.current
+                        ? "Couldn't connect to a participant. Your networks may be blocking the connection."
+                        : "No relay server available — calls between different networks may not connect."
+                );
+            } else if (state === 'disconnected') {
+                setConnectionWarning("Connection unstable — trying to recover…");
+            } else if (state === 'connected' || state === 'completed') {
+                setConnectionWarning("");
+            }
+        }
+
+        pc.onconnectionstatechange = () => {
+            logState(peerLabel, 'connectionState', pc.connectionState);
+        }
+
+        pc.onicecandidateerror = (event) => {
+            // Host only — never the full URL, which carries TURN credentials.
+            let host = 'unknown';
+            try { host = event.url ? new URL(event.url.replace(/^turns?:/i, 'https://').split('?')[0]).hostname : 'unknown'; } catch (e) { }
+            logState(peerLabel, 'iceCandidateError', `code:${event.errorCode} host:${host}`);
         }
 
         pc.ontrack = (event) => {
@@ -269,6 +332,7 @@ export default function VideoMeetComponent() {
                 delete connections[id];
             }
             delete pendingIceRef.current[id];
+            delete candidateStatsRef.current[id];
         })
 
         socketRef.current.on('user-joined', (id, clients, nameMap) => {
@@ -469,6 +533,25 @@ export default function VideoMeetComponent() {
 
 
                 <div className={styles.meetVideoContainer}>
+
+                    {/* Connection trouble notice — replaces a silent blank call */}
+                    {connectionWarning && (
+                        <div
+                            role="status"
+                            style={{
+                                position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+                                zIndex: 30, maxWidth: 'min(90vw, 460px)',
+                                background: 'rgba(239,68,68,0.92)', color: '#fff',
+                                border: '1px solid rgba(255,255,255,0.25)', borderRadius: 0,
+                                padding: '9px 14px',
+                                fontFamily: 'var(--font-mono)', fontSize: 10,
+                                letterSpacing: '0.12em', textTransform: 'uppercase',
+                                textAlign: 'center', backdropFilter: 'blur(6px)'
+                            }}
+                        >
+                            {connectionWarning}
+                        </div>
+                    )}
 
                     {showModal ? <div className={styles.chatRoom}>
 

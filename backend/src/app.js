@@ -7,6 +7,7 @@ import { connectToSocket } from "./controllers/socketManager.js";
 
 import cors from "cors";
 import userRoutes from "./routes/users.routes.js";
+import turnRoutes from "./routes/turn.routes.js";
 
 const app = express();
 const server = createServer(app);
@@ -16,6 +17,9 @@ connectToSocket(server);
 
 
 app.set("port", (process.env.PORT || 8000))
+// Render terminates TLS at its proxy — without this, req.ip is the proxy's
+// address and every client would share one rate-limit bucket
+app.set("trust proxy", 1)
 app.use(cors({
     origin: "*",
     methods: ["GET", "POST"],
@@ -25,6 +29,7 @@ app.use(express.json({ limit: "40kb" }));
 app.use(express.urlencoded({ limit: "40kb", extended: true }));
 
 app.use("/api/v1/users", userRoutes);
+app.use("/api", turnRoutes);
 
 const start = async () => {
     if (!process.env.MONGO_URI) {
